@@ -13,7 +13,7 @@ let img;
 let newImg;
 const sketch = new p5(function(self) {
     self.preload = function() {
-        img = self.loadImage('images/bones-building.jpeg');
+        img = self.loadImage('images/cat-hat.jpeg');
     };
     self.setup = function() {
         self.createCanvas(2 * img.width, img.height);
