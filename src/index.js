@@ -6,30 +6,40 @@ if (!window.Worker) {
 }
 
 const worker = new Worker('task.js');
-
 let imgIn;
 let imgOut;
-const sketch = new p5(function(self) {
+let sketchIn;
+let sketchOut;
+
+sketchIn = new p5(function(self) {
     self.preload = function() {
-        imgIn = self.loadImage('images/cat-hat.jpeg');
+        imgIn = self.loadImage('images/bones-building.jpeg');
     };
     self.setup = function() {
-        self.createCanvas(2 * imgIn.width, imgIn.height);
-        imgOut = self.createImage(imgIn.width, imgIn.height);
-        worker.addEventListener('message', (event) => {
-            const { newImage } = event.data;
-            for (const [x, y, channels] of newImage) {
-                imgOut.set(x, y, channels);
-            }
-            // end cycle: loadPixels -> post image -> get new image -> updatePixels
-            imgIn.updatePixels();
-            imgOut.updatePixels();
-        });
+        self.createCanvas(imgIn.width, imgIn.height);
+        sketchOut = new p5(function(self) {
+            self.setup = function () {
+                self.createCanvas(imgIn.width, imgIn.height);
+                imgOut = self.createImage(imgIn.width, imgIn.height);
+                worker.addEventListener('message', (event) => {
+                    const { newImage } = event.data;
+                    for (const [x, y, channels] of newImage) {
+                        imgOut.set(x, y, channels);
+                    }
+                    // end cycle: loadPixels -> post image -> get new image -> updatePixels
+                    imgIn.updatePixels();
+                    imgOut.updatePixels();
+                });
+            };
+            self.draw = function () {
+                self.background(0);
+                self.image(imgOut, 0, 0);
+            };
+        }, document.getElementById('sketch-out'));
     };
     self.draw = function() {
         self.background(0);
         self.image(imgIn, 0, 0);
-        self.image(imgOut, imgIn.width, 0);
     };
     self.keyPressed = function() {
         if (self.keyCode === 32) {
@@ -51,4 +61,4 @@ const sketch = new p5(function(self) {
             });
         }
     }
-});
+}, document.getElementById('sketch-in'));
