@@ -1,85 +1,54 @@
 const p5 = require('p5');
 const _ = require('lodash');
 
-if (window.Worker) {
-    const worker = new Worker('task.js')
-    worker.addEventListener('message', (eee) => {
-        console.log(eee)
-    })
-    worker.postMessage({ cookie: 'i love it' })
+if (!window.Worker) {
+    console.log("You don't have workers, sorry!");
 }
 
-let img;
-let newImg;
+const worker = new Worker('task.js');
+
+let imgIn;
+let imgOut;
 const sketch = new p5(function(self) {
     self.preload = function() {
-        img = self.loadImage('images/cat-hat.jpeg');
+        imgIn = self.loadImage('images/cat-hat.jpeg');
     };
     self.setup = function() {
-        self.createCanvas(2 * img.width, img.height);
-        newImg = self.createImage(img.width, img.height);
+        self.createCanvas(2 * imgIn.width, imgIn.height);
+        imgOut = self.createImage(imgIn.width, imgIn.height);
+        worker.addEventListener('message', (event) => {
+            const { newImage } = event.data;
+            for (const [x, y, channels] of newImage) {
+                imgOut.set(x, y, channels);
+            }
+            // end cycle: loadPixels -> post image -> get new image -> updatePixels
+            imgIn.updatePixels();
+            imgOut.updatePixels();
+        });
     };
     self.draw = function() {
         self.background(0);
-        self.image(img, 0, 0);
-        self.image(newImg, img.width, 0);
+        self.image(imgIn, 0, 0);
+        self.image(imgOut, imgIn.width, 0);
     };
     self.keyPressed = function() {
         if (self.keyCode === 32) {
-            img.loadPixels();
-            newImg.loadPixels();
+            // begin cycle: loadPixels -> post image -> get new image -> updatePixels
+            imgIn.loadPixels();
+            imgOut.loadPixels();
 
-            const kernel = Kernel([
-                [-2, -1, 0],
-                [-1, 1, 1],
-                [0, 1, 2]
-            ]);
-
-            for (let x = 0; x < img.width; x++) {
-                for (let y = 0; y < img.height; y++) {
-                    const newPixelChannels = [];
-                    for (let i = 0; i < 3; i++) {
-                        const pixels = pixelsAround(img, x, y, i);
-                        const zip = _.zipWith(kernel.array, pixels, (k, p) => k * p);
-                        const sum = _.sum(zip);
-                        const newPixel = sum / kernel.scale;
-                        newPixelChannels.push(newPixel);
-                    }
-                    newImg.set(x, y, [...newPixelChannels, 255]);
+            worker.postMessage({
+                kernelData: [
+                    [-2, -1, 0],
+                    [-1, 1, 1],
+                    [0, 1, 2]
+                ],
+                image: {
+                    width: imgIn.width,
+                    height: imgIn.height,
+                    pixels: imgIn.pixels
                 }
-            }
-            img.updatePixels();
-            newImg.updatePixels();
-            console.log('did it')
+            });
         }
     }
 });
-
-function Kernel(squareMatrix) {
-    const array = _.flatten(squareMatrix);
-    return {
-        array,
-        scale: _.sum(array)
-    };
-}
-
-function pixelsAround(img, x, y, i) {
-    /** 
-     * To be called only after img.loadPixels() has been called
-    */
-    const pos = [
-        [x-1, y-1], [x, y-1], [x+1, y-1],
-        [x-1, y],   [x, y],   [x+1, y],
-        [x-1, y+1], [x, y+1], [x+1, y+1]
-    ];
-    return _.map(pos, ([a, b]) => {
-        if (a < 0 || b < 0 || a >= img.width || b >= img.height) {
-            return 0;
-        }
-        return img.pixels[loc(a, b, img.width) + i];
-    });
-}
-
-function loc(x, y, rowLen) {
-    return 4 * x + 4 * y * rowLen;
-}
