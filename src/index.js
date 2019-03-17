@@ -1,5 +1,4 @@
 const p5 = require('p5');
-const _ = require('lodash');
 
 if (!window.Worker) {
     console.log("You don't have workers, sorry!");
@@ -11,16 +10,16 @@ let imgOut;
 let sketchIn;
 let sketchOut;
 
-sketchIn = new p5(function(self) {
-    self.preload = function() {
-        imgIn = self.loadImage('images/bones-building.jpeg');
+sketchIn = new p5(function(sIn) {
+    sIn.preload = function() {
+        imgIn = sIn.loadImage('images/bones-building.jpeg');
     };
-    self.setup = function() {
-        self.createCanvas(imgIn.width, imgIn.height);
-        sketchOut = new p5(function(self) {
-            self.setup = function () {
-                self.createCanvas(imgIn.width, imgIn.height);
-                imgOut = self.createImage(imgIn.width, imgIn.height);
+    sIn.setup = function() {
+        sIn.createCanvas(imgIn.width, imgIn.height);
+        sketchOut = new p5(function(sOut) {
+            sOut.setup = function() {
+                sOut.createCanvas(imgIn.width, imgIn.height);
+                imgOut = sOut.createImage(imgIn.width, imgIn.height);
                 worker.addEventListener('message', (event) => {
                     const { newImage } = event.data;
                     for (const [x, y, channels] of newImage) {
@@ -31,18 +30,18 @@ sketchIn = new p5(function(self) {
                     imgOut.updatePixels();
                 });
             };
-            self.draw = function () {
-                self.background(0);
-                self.image(imgOut, 0, 0);
+            sOut.draw = function() {
+                sOut.background(0);
+                sOut.image(imgOut, 0, 0);
             };
         }, document.getElementById('sketch-out'));
     };
-    self.draw = function() {
-        self.background(0);
-        self.image(imgIn, 0, 0);
+    sIn.draw = function() {
+        sIn.background(0);
+        sIn.image(imgIn, 0, 0);
     };
-    self.keyPressed = function() {
-        if (self.keyCode === 32) {
+    sIn.keyPressed = function() {
+        if (sIn.keyCode === 32) {
             // begin cycle: loadPixels -> post image -> get new image -> updatePixels
             imgIn.loadPixels();
             imgOut.loadPixels();
