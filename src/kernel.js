@@ -4,7 +4,7 @@
  * So write to DOM and read from DOM to get the kernel
  */
 
-module.exports.templates = {
+const templates = {
     // Source: https://en.wikipedia.org/wiki/Kernel_(image_processing)
     'Sharpen': {
         squareMatrix: [
@@ -48,7 +48,8 @@ module.exports.templates = {
         scale: 1
     },
 }
-module.exports.updateKernel = ({ squareMatrix, scale }) => {
+module.exports.updateKernel = (kernelName) => {
+    const { squareMatrix, scale } = templates[kernelName];
     const table = document.getElementById('kernel-table');
     const scaleInput = document.getElementById('scale-input');
 

@@ -1,5 +1,5 @@
 const p5 = require('p5');
-const { parseKernel } = require('./kernel.js');
+const { parseKernel, updateKernel } = require('./kernel.js');
 
 if (!window.Worker) {
     console.log("You don't have workers, sorry!");
@@ -7,6 +7,8 @@ if (!window.Worker) {
 
 const worker = new Worker('task.js');
 const applyBtn = document.getElementById('apply-kernel-btn');
+const kernelSelect = document.getElementById('kernel-select');
+
 let imgIn;
 let imgOut;
 let sketchIn;
@@ -66,3 +68,9 @@ sketchIn = new p5(function(sIn) {
         sIn.image(imgIn, 0, 0);
     };
 }, document.getElementById('sketch-in'));
+
+
+updateKernel(kernelSelect.value);
+kernelSelect.addEventListener('change', (event) => {
+    updateKernel(kernelSelect.value);
+});
