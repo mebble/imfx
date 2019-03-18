@@ -4,13 +4,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>IMG-FX</title>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./layout.css">
 </head>
 <body>
-    <div>
-        <button type="button" onclick="console.log('responsive!')">Click me</button>
+    <div id="content">
+        <div class="row">
+            <h1>ImFilter</h1>
+        </div>
+        <div id="sketch-in" class="canvas-container"></div>
+        <div id="sketch-out" class="canvas-container"></div>
+        <div class="row">
+            <table class="kernel-table">
+                <caption>Kernel</caption>
+                <tr>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                </tr>
+                <tr>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                </tr>
+                <tr>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="square-input" type="number" value="0" /></td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <button id="kernel-submit-btn" type="button">Apply filter</button>
+        </div>
     </div>
-    <div id="sketch-in"></div>
-    <div id="sketch-out"></div>
     <script src="./index.js"></script>
 </body>
 </html>
