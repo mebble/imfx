@@ -1,10 +1,12 @@
 const p5 = require('p5');
+const { updateKernel } = require('./kernel.js');
 
 if (!window.Worker) {
     console.log("You don't have workers, sorry!");
 }
 
 const worker = new Worker('task.js');
+const applyBtn = document.getElementById('apply-kernel-btn');
 let imgIn;
 let imgOut;
 let sketchIn;
@@ -20,6 +22,10 @@ sketchIn = new p5(function(sIn) {
             sOut.setup = function() {
                 sOut.createCanvas(imgIn.width, imgIn.height);
                 imgOut = sOut.createImage(imgIn.width, imgIn.height);
+
+                /**
+                 * init listeneres only once imgIn and imgOut have been defined
+                */
                 worker.addEventListener('message', (event) => {
                     const { newImage } = event.data;
                     for (const [x, y, channels] of newImage) {
@@ -28,6 +34,28 @@ sketchIn = new p5(function(sIn) {
                     // end cycle: loadPixels -> post image -> get new image -> updatePixels
                     imgIn.updatePixels();
                     imgOut.updatePixels();
+                });
+
+                applyBtn.addEventListener('click', (event) => {
+                    // begin cycle: loadPixels -> post image -> get new image -> updatePixels
+                    imgIn.loadPixels();
+                    imgOut.loadPixels();
+
+                    worker.postMessage({
+                        kernel: {
+                            squareMatrix: [
+                                [-2, -1, 0],
+                                [-1, 1, 1],
+                                [0, 1, 2]
+                            ],
+                            scalar: 1
+                        },
+                        image: {
+                            width: imgIn.width,
+                            height: imgIn.height,
+                            pixels: imgIn.pixels
+                        }
+                    });
                 });
             };
             sOut.draw = function() {
@@ -40,24 +68,4 @@ sketchIn = new p5(function(sIn) {
         sIn.background(0);
         sIn.image(imgIn, 0, 0);
     };
-    sIn.keyPressed = function() {
-        if (sIn.keyCode === 32) {
-            // begin cycle: loadPixels -> post image -> get new image -> updatePixels
-            imgIn.loadPixels();
-            imgOut.loadPixels();
-
-            worker.postMessage({
-                kernelData: [
-                    [-2, -1, 0],
-                    [-1, 1, 1],
-                    [0, 1, 2]
-                ],
-                image: {
-                    width: imgIn.width,
-                    height: imgIn.height,
-                    pixels: imgIn.pixels
-                }
-            });
-        }
-    }
 }, document.getElementById('sketch-in'));

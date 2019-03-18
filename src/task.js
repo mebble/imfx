@@ -1,7 +1,8 @@
 const _ = require('lodash');
+const { Kernel } = require('./kernel.js');
 
 self.addEventListener('message', (event) => {
-    const { kernelData, image } = event.data;
+    const { kernel: kernelData, image } = event.data;
     
     const kernel = Kernel(kernelData);
     const newImage = [];
@@ -21,14 +22,6 @@ self.addEventListener('message', (event) => {
     }
     self.postMessage({ newImage });
 });
-
-function Kernel(squareMatrix) {
-    const array = _.flatten(squareMatrix);
-    return {
-        array,
-        scale: _.sum(array)
-    };
-}
 
 function pixelsAround(img, x, y, i) {
     const pos = [
