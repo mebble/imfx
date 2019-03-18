@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>IMG-FX</title>
+    <link rel="stylesheet" href="./reset.css">
     <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="./layout.css">
 </head>
@@ -14,25 +15,26 @@
         </div>
         <div id="sketch-in" class="canvas-container"></div>
         <div id="sketch-out" class="canvas-container"></div>
-        <div class="row">
+        <div class="row" style="flex-direction: column">
             <table id="kernel-table">
                 <caption>Kernel</caption>
                 <tr>
-                    <td><input class="square-input" type="number" value="0" /></td>
-                    <td><input class="square-input" type="number" value="0" /></td>
-                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
                 </tr>
                 <tr>
-                    <td><input class="square-input" type="number" value="0" /></td>
-                    <td><input class="square-input" type="number" value="0" /></td>
-                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
                 </tr>
                 <tr>
-                    <td><input class="square-input" type="number" value="0" /></td>
-                    <td><input class="square-input" type="number" value="0" /></td>
-                    <td><input class="square-input" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
+                    <td><input class="number-box" type="number" value="0" /></td>
                 </tr>
             </table>
+            <input id="scale-input" class="number-box" type="number" value="1" />
         </div>
         <div class="row">
             <button id="apply-kernel-btn" type="button">Apply filter</button>

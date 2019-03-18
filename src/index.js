@@ -1,5 +1,5 @@
 const p5 = require('p5');
-const { updateKernel } = require('./kernel.js');
+const { parseKernel } = require('./kernel.js');
 
 if (!window.Worker) {
     console.log("You don't have workers, sorry!");
@@ -34,22 +34,19 @@ sketchIn = new p5(function(sIn) {
                     // end cycle: loadPixels -> post image -> get new image -> updatePixels
                     imgIn.updatePixels();
                     imgOut.updatePixels();
+
+                    applyBtn.disabled = false;
                 });
 
                 applyBtn.addEventListener('click', (event) => {
+                    applyBtn.disabled = true;
+
                     // begin cycle: loadPixels -> post image -> get new image -> updatePixels
                     imgIn.loadPixels();
                     imgOut.loadPixels();
 
                     worker.postMessage({
-                        kernel: {
-                            squareMatrix: [
-                                [-2, -1, 0],
-                                [-1, 1, 1],
-                                [0, 1, 2]
-                            ],
-                            scalar: 1
-                        },
+                        kernel: parseKernel(),
                         image: {
                             width: imgIn.width,
                             height: imgIn.height,

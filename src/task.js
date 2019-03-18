@@ -1,20 +1,23 @@
 const _ = require('lodash');
-const { Kernel } = require('./kernel.js');
 
 self.addEventListener('message', (event) => {
-    const { kernel: kernelData, image } = event.data;
-    
-    const kernel = Kernel(kernelData);
-    const newImage = [];
+    const { kernel, image } = event.data;
 
+    const newImage = [];
     for (let x = 0; x < image.width; x++) {
         for (let y = 0; y < image.height; y++) {
             const newPixelChannels = [];
             for (let i = 0; i < 3; i++) {
                 const pixels = pixelsAround(image, x, y, i);
-                const zip = _.zipWith(kernel.array, pixels, (k, p) => k * p);
+                const zip = _.zipWith(
+                    _.flatten(kernel.squareMatrix),
+                    pixels,
+                    (k, p) => k * p
+                );
                 const sum = _.sum(zip);
-                const newPixel = sum / kernel.scale;
+                const newPixel = kernel.scale === 0
+                    ? sum
+                    : sum / kernel.scale;
                 newPixelChannels.push(newPixel);
             }
             newImage.push([x, y, [...newPixelChannels, 255]]);
