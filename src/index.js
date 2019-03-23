@@ -49,7 +49,6 @@ function newImageSketch(imageName, firstImage) {
                     if (!firstImage) return;
 
                     worker.addEventListener('message', (event) => {
-                        console.log('do it');
                         const { newImage } = event.data;
                         for (const [x, y, channels] of newImage) {
                             imgOut.set(x, y, channels);
