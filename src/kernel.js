@@ -4,6 +4,13 @@
  * So write to DOM and read from DOM to get the kernel
  */
 
+const parseValue = val => {
+    const num = parseInt(val);
+    return isNaN(num)
+        ? 0
+        : num;
+};
+
 const templates = {
     // Source: https://en.wikipedia.org/wiki/Kernel_(image_processing)
     'Sharpen': {
@@ -73,25 +80,20 @@ module.exports.parseKernel = () => {
     const scaleInput = document.getElementById('scale-input');
 
     const squareMatrix = [];
-    for (let i = 0; i < table.rows.length; i++) {
-        const { cells: [c1, c2, c3] } = table.rows[i];
-
+    for (const { cells: [c1, c2, c3] } of table.rows) {
         const [inputL] = c1.children;
         const [inputM] = c2.children;
         const [inputR] = c3.children;
 
         const values = [ inputL.value, inputM.value, inputR.value ]
-            .map(val => {
-                const num = parseInt(val);
-                return isNaN(num)
-                    ? 0
-                    : num;
-            })
+            .map(parseValue)
         squareMatrix.push(values);
     }
 
+    const scale = parseValue(scaleInput.value);
+
     return {
         squareMatrix,
-        scale: scaleInput.value
+        scale
     };
 };
