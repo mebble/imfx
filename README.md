@@ -24,6 +24,7 @@ Apply a filter to an image through kernel convolution
 
 ## TODOs
 - [x] Choose updatable kernel from templates
+- [x] Choose from a selection of images
 - [ ] Upload image from device
 - [ ] Take camera photo and use image
 - [ ] Download output to device
