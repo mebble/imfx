@@ -1,5 +1,6 @@
-const p5 = require('p5');
-const { parseKernel, updateKernel } = require('./kernel.js');
+import p5 from 'p5';
+import { parseKernel, updateKernel } from './kernel.js';
+import images from './../assets/images/*.jpeg';
 
 if (!window.Worker) {
     console.log("You don't have workers, sorry!");
@@ -16,7 +17,7 @@ let sketchOut;
 
 sketchIn = new p5(function(sIn) {
     sIn.preload = function() {
-        imgIn = sIn.loadImage('images/bones-building.jpeg');
+        imgIn = sIn.loadImage(images['bones-building']);
     };
     sIn.setup = function() {
         sIn.createCanvas(imgIn.width, imgIn.height);

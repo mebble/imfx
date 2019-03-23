@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 self.addEventListener('message', (event) => {
     const { kernel, image } = event.data;
