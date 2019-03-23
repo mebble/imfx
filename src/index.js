@@ -7,23 +7,20 @@ if (!window.Worker) {
 }
 
 const worker = new Worker('task.js');
-const applyBtn = document.getElementById('apply-kernel-btn');
-const kernelSelect = document.getElementById('kernel-select');
-const imageSelect = document.getElementById('image-select');
-const sketchInDiv = document.getElementById('sketch-in');
-const sketchOutDiv = document.getElementById('sketch-out');
 
 let imgIn;
 let imgOut;
 let sketchIn;
 let sketchOut;
 
+const imageSelect = document.getElementById('image-select');
 newImageSketch(imageSelect.value, true);
 imageSelect.addEventListener('change', (event) => {
-    cleanCanvases(sketchInDiv, sketchOutDiv);
+    cleanCanvases();
     newImageSketch(imageSelect.value, false);
 });
 
+const kernelSelect = document.getElementById('kernel-select');
 updateKernel(kernelSelect.value);
 kernelSelect.addEventListener('change', (event) => {
     updateKernel(kernelSelect.value);
@@ -60,6 +57,7 @@ function newImageSketch(imageName, firstImage) {
                         applyBtn.disabled = false;
                     });
 
+                    const applyBtn = document.getElementById('apply-kernel-btn');
                     applyBtn.addEventListener('click', (event) => {
                         applyBtn.disabled = true;
 
@@ -81,21 +79,22 @@ function newImageSketch(imageName, firstImage) {
                     sOut.background(0);
                     sOut.image(imgOut, 0, 0);
                 };
-            }, sketchOutDiv);
+            }, 'sketch-out');
         };
         sIn.draw = function () {
             sIn.background(0);
             sIn.image(imgIn, 0, 0);
         };
-    }, sketchInDiv);
+    }, 'sketch-in');
 };
 
-function cleanCanvases(sketchInContainer, sketchOutContainer) {
-    while (sketchInContainer.firstChild) {
-        sketchInContainer.removeChild(sketchInContainer.firstChild);
+function cleanCanvases() {
+    const sketchInDiv = document.getElementById('sketch-in');
+    const sketchOutDiv = document.getElementById('sketch-out');
+    while (sketchInDiv.firstChild) {
+        sketchInDiv.removeChild(sketchInDiv.firstChild);
     }
-
-    while (sketchOutContainer.firstChild) {
-        sketchOutContainer.removeChild(sketchOutContainer.firstChild);
+    while (sketchOutDiv.firstChild) {
+        sketchOutDiv.removeChild(sketchOutDiv.firstChild);
     }
 }

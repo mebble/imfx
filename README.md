@@ -29,3 +29,4 @@ Apply a filter to an image through kernel convolution
 - [ ] Take camera photo and use image
 - [ ] Download output to device
 - [ ] Allow use of 5x5 kernels
+- [ ] Use native canvas api instead of p5
