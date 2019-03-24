@@ -3,24 +3,21 @@ import _ from 'lodash';
 self.addEventListener('message', (event) => {
     const { kernel, image } = event.data;
 
+    const applyKernel = useKernel({
+        kernelArray: _.flatten(kernel.squareMatrix),
+        scale: kernel.scale
+    }, image);
+
     const newImage = [];
     for (let x = 0; x < image.width; x++) {
         for (let y = 0; y < image.height; y++) {
-            const newPixelChannels = [];
-            for (let i = 0; i < 3; i++) {
-                const pixels = pixelsAround(image, x, y, i);
-                const zip = _.zipWith(
-                    _.flatten(kernel.squareMatrix),
-                    pixels,
-                    (k, p) => k * p
-                );
-                const sum = _.sum(zip);
-                const newPixel = kernel.scale === 0
-                    ? sum
-                    : sum / kernel.scale;
-                newPixelChannels.push(newPixel);
-            }
-            newImage.push([x, y, [...newPixelChannels, 255]]);
+            const newPixelChannels = [
+                applyKernel(x, y, 0),
+                applyKernel(x, y, 1),
+                applyKernel(x, y, 2),
+                255
+            ];
+            newImage.push([x, y, newPixelChannels]);
         }
     }
     self.postMessage({ newImage });
@@ -42,4 +39,19 @@ function pixelsAround(img, x, y, i) {
 
 function loc(x, y, rowLen) {
     return 4 * x + 4 * y * rowLen;
+}
+
+function useKernel({ kernelArray, scale }, image) {
+    return (x, y, i) => {
+        const pixels = pixelsAround(image, x, y, i);
+        const zip = _.zipWith(
+            kernelArray,
+            pixels,
+            (k, p) => k * p
+        );
+        const sum = _.sum(zip);
+        return (scale === 0)
+            ? sum
+            : sum / scale;
+    };
 }
