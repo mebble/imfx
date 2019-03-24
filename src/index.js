@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { parseKernel, updateKernel } from './kernel.js';
+import { parseKernel, updateKernel, parseToCustom } from './kernel.js';
 import images from './../assets/images/*.jpeg';
 
 if (!window.Worker) {
@@ -24,6 +24,12 @@ const kernelSelect = document.getElementById('kernel-select');
 updateKernel(kernelSelect.value);
 kernelSelect.addEventListener('change', (event) => {
     updateKernel(kernelSelect.value);
+});
+
+const kernelTable = document.getElementById('kernel-table');
+kernelTable.addEventListener('input', (event) => {
+    kernelSelect.value = 'Custom';
+    parseToCustom();
 });
 
 function newImageSketch(imageName, firstImage) {

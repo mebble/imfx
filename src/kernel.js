@@ -1,7 +1,8 @@
 /**
- * All kernel state must be stored in the DOM
+ * All sample kernel states must be stored in the DOM
  * so that the user can edit this state directly.
- * So write to DOM and read from DOM to get the kernel
+ * So write to DOM and read from DOM to get the kernel.
+ * Custom kernel state is stored in this module.
  */
 
 const parseValue = val => {
@@ -53,10 +54,22 @@ const templates = {
             [0, 1, 2]
         ],
         scale: 1
-    },
-}
-module.exports.updateKernel = (kernelName) => {
-    const { squareMatrix, scale } = templates[kernelName];
+    }
+};
+
+let customKernel = {
+    squareMatrix: [
+        [0, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0]
+    ],
+    scale: 1
+};
+
+const updateKernel = (kernelName) => {
+    const { squareMatrix, scale } = (kernelName === 'Custom')
+        ? customKernel
+        : templates[kernelName];
     const table = document.getElementById('kernel-table');
     const scaleInput = document.getElementById('scale-input');
 
@@ -75,7 +88,8 @@ module.exports.updateKernel = (kernelName) => {
 
     scaleInput.value = scale;
 };
-module.exports.parseKernel = () => {
+
+const parseKernel = () => {
     const table = document.getElementById('kernel-table');
     const scaleInput = document.getElementById('scale-input');
 
@@ -96,4 +110,15 @@ module.exports.parseKernel = () => {
         squareMatrix,
         scale
     };
+};
+
+const parseToCustom = () => {
+    const kernel = parseKernel();
+    customKernel = kernel;
+};
+
+module.exports = {
+    updateKernel,
+    parseKernel,
+    parseToCustom
 };
