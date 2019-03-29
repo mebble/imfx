@@ -25,6 +25,8 @@ Apply a filter to an image through kernel convolution
 ## TODOs
 - [x] Choose updatable kernel from templates
 - [x] Choose from a selection of images
+- [x] Split and process image across 4 workers
+- [ ] Log the time taken to process image. Can log the time taken separately for each worker
 - [ ] Upload image from device
 - [ ] Take camera photo and use image
 - [ ] Download output to device

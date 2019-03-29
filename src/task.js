@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { posToIndex } from './utils';
 
 self.addEventListener('message', (event) => {
-    const { kernel, image } = event.data;
+    const { kernel, image, xOff, yOff } = event.data;
 
     const applyKernel = useKernel({
         kernelArray: _.flatten(kernel.squareMatrix),
@@ -10,8 +10,9 @@ self.addEventListener('message', (event) => {
     }, image);
 
     const newImage = [];
-    for (let y = 0; y < image.height; y++) {
-        for (let x = 0; x < image.width; x++) {
+    // don't process pixels on the image's edge. These edge pixels also won't be returned to the main thread
+    for (let y = 1; y < image.height-1; y++) {
+        for (let x = 1; x < image.width-1; x++) {
             const newPixelChannels = [
                 applyKernel(x, y, 0),
                 applyKernel(x, y, 1),
@@ -21,7 +22,7 @@ self.addEventListener('message', (event) => {
             newImage.push([x, y, newPixelChannels]);
         }
     }
-    self.postMessage({ newImage });
+    self.postMessage({ newImage, xOff, yOff });
 });
 
 function pixelsAround(img, x, y, i) {
