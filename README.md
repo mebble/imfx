@@ -1,5 +1,7 @@
 # ImFx
-Apply a filter to an image through kernel convolution
+Apply a filter to an image through kernel convolution.
+
+Check out [the demo](https://mebble.github.io/imfx/).
 
 ## What it does
 - Takes an image
