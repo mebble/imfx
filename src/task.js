@@ -10,8 +10,8 @@ self.addEventListener('message', (event) => {
     }, image);
 
     const newImage = [];
-    for (let x = 0; x < image.width; x++) {
-        for (let y = 0; y < image.height; y++) {
+    for (let y = 0; y < image.height; y++) {
+        for (let x = 0; x < image.width; x++) {
             const newPixelChannels = [
                 applyKernel(x, y, 0),
                 applyKernel(x, y, 1),

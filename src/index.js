@@ -1,5 +1,7 @@
 import p5 from 'p5';
 import { parseKernel, updateKernel, parseToCustom } from './kernel';
+import { posToIndex } from './utils';
+
 import images from './../assets/images/*.jpeg';
 
 if (!window.Worker) {
@@ -52,10 +54,17 @@ function newImageSketch(imageName, firstImage) {
                     if (!firstImage) return;
 
                     worker.addEventListener('message', (event) => {
+                        const toIndex = posToIndex(imgOut.width);
+
                         const { newImage } = event.data;
                         for (const [x, y, channels] of newImage) {
-                            imgOut.set(x, y, channels);
+                            const index = toIndex(x, y);
+                            imgOut.pixels[index + 0] = channels[0];
+                            imgOut.pixels[index + 1] = channels[1];
+                            imgOut.pixels[index + 2] = channels[2];
+                            imgOut.pixels[index + 3] = channels[3];
                         }
+
                         // end cycle: loadPixels -> post image -> get new image -> updatePixels
                         imgIn.updatePixels();
                         imgOut.updatePixels();
