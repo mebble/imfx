@@ -66,7 +66,7 @@ let customKernel = {
     scale: 1
 };
 
-const updateKernel = (kernelName) => {
+export const updateKernel = (kernelName) => {
     const { squareMatrix, scale } = (kernelName === 'Custom')
         ? customKernel
         : templates[kernelName];
@@ -89,7 +89,7 @@ const updateKernel = (kernelName) => {
     scaleInput.value = scale;
 };
 
-const parseKernel = () => {
+export const parseKernel = () => {
     const table = document.getElementById('kernel-table');
     const scaleInput = document.getElementById('scale-input');
 
@@ -112,13 +112,7 @@ const parseKernel = () => {
     };
 };
 
-const parseToCustom = () => {
+export const parseToCustom = () => {
     const kernel = parseKernel();
     customKernel = kernel;
-};
-
-module.exports = {
-    updateKernel,
-    parseKernel,
-    parseToCustom
 };

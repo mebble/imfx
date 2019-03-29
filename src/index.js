@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { parseKernel, updateKernel, parseToCustom } from './kernel.js';
+import { parseKernel, updateKernel, parseToCustom } from './kernel';
 import images from './../assets/images/*.jpeg';
 
 if (!window.Worker) {
@@ -59,7 +59,7 @@ function newImageSketch(imageName, firstImage) {
                         // end cycle: loadPixels -> post image -> get new image -> updatePixels
                         imgIn.updatePixels();
                         imgOut.updatePixels();
-
+                        console.timeEnd('filter time:');
                         applyBtn.disabled = false;
                     });
 
@@ -79,6 +79,7 @@ function newImageSketch(imageName, firstImage) {
                                 pixels: imgIn.pixels
                             }
                         });
+                        console.time('filter time:');
                     });
                 };
                 sOut.draw = function () {

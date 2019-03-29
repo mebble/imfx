@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { posToIndex } from './utils';
 
 self.addEventListener('message', (event) => {
     const { kernel, image } = event.data;
@@ -29,16 +30,13 @@ function pixelsAround(img, x, y, i) {
         [x - 1, y], [x, y], [x + 1, y],
         [x - 1, y + 1], [x, y + 1], [x + 1, y + 1]
     ];
+    const toIndex = posToIndex(img.width);
     return _.map(pos, ([a, b]) => {
         if (a < 0 || b < 0 || a >= img.width || b >= img.height) {
             return 0;
         }
-        return img.pixels[loc(a, b, img.width) + i];
+        return img.pixels[toIndex(a, b) + i];
     });
-}
-
-function loc(x, y, rowLen) {
-    return 4 * x + 4 * y * rowLen;
 }
 
 function useKernel({ kernelArray, scale }, image) {
