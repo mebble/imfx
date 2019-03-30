@@ -29,6 +29,11 @@ Check out [the demo](https://mebble.github.io/imfx/).
 - [x] Choose from a selection of images
 - [x] Split and process image across 4 workers
 - [ ] Log the time taken to process image. Can log the time taken separately for each worker
+- [ ] Implement more image processing stuff:
+    * [ ] min/max/median filters
+    * [ ] Separable filters for faster convolution
+    * [ ] Bit-plane slicing
+- [ ] Use WebGL for fast processing in each worker
 - [ ] Upload image from device
 - [ ] Take camera photo and use image
 - [ ] Download output to device
