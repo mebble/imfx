@@ -2,28 +2,36 @@ import _ from 'lodash';
 import { posToIndex } from './utils';
 
 self.addEventListener('message', (event) => {
-    const { kernel, image, xOff, yOff } = event.data;
+    if (event.data.op === 'spatial-filter') {
+        const { kernel, image, xOff, yOff } = event.data;
+        const newImage = filterImage(kernel, image);
+        self.postMessage({ newImage, xOff, yOff });
+        return;
+    }
+});
 
+function filterImage(kernel, image) {
     const applyKernel = useKernel({
         kernelArray: _.flatten(kernel.squareMatrix),
         scale: kernel.scale
     }, image);
 
-    const newImage = [];
+    const resImage = [];
     // don't process pixels on the image's edge. These edge pixels also won't be returned to the main thread
-    for (let y = 1; y < image.height-1; y++) {
-        for (let x = 1; x < image.width-1; x++) {
+    for (let y = 1; y < image.height - 1; y++) {
+        for (let x = 1; x < image.width - 1; x++) {
             const newPixelChannels = [
                 applyKernel(x, y, 0),
                 applyKernel(x, y, 1),
                 applyKernel(x, y, 2),
                 255
             ];
-            newImage.push([x, y, newPixelChannels]);
+            resImage.push([x, y, newPixelChannels]);
         }
     }
-    self.postMessage({ newImage, xOff, yOff });
-});
+
+    return resImage;
+}
 
 function pixelsAround(img, x, y, i) {
     const pos = [

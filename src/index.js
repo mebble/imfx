@@ -95,6 +95,7 @@ function newImageSketch(imageName, firstImage) {
                             const subImg = imgIn.get(xOff, yOff, w, h);
                             subImg.loadPixels();
                             worker.postMessage({
+                                op: 'spatial-filter',
                                 kernel,
                                 xOff,
                                 yOff,
