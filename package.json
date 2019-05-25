@@ -5,7 +5,7 @@
   "scripts": {
     "cleanup": "rm -rf .cache dist",
     "dev": "npm run cleanup && parcel src/index.html",
-    "build": "npm run cleanup && parcel build src/index.html && rm dist/*.map && mv dist build"
+    "build": "npm run cleanup && parcel build src/index.html && rm dist/*.map"
   },
   "keywords": [
     "image",

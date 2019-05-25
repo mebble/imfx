@@ -13,11 +13,17 @@
 <body>
     <div id="content">
         <div class="row">
-            <h1 id="title">ImFx</h1>
+            <h1 id="title">Bit-plane Slicing</h1>
         </div>
         <div class="row">
             <p>
-                Bit plane slicing!!!
+                This demonstrates bit-plane slicing on a given input image. The slider's value indicates the
+                bit-plane of the image we want to retrieve. The value 0 stands for the most significant bit-plane and 7
+                stands for the least significant. The images are rendered using the RGB 0-255 range, but since bit-plane slicing is
+                supposed to return a binary image, the output bit value of 1 is mapped to the RGB value of 255 before rendering it.
+                The bit-plane slicing process is performed separately for each of the RGB channels and the bit-plane images are combined.
+                Notice how the 0-plane is mostly white, since most images easily have a lot of pixels
+                of values greater than 128 (equal to 10000000 in binary).
             </p>
         </div>
         <div id="sketch-in" class="canvas-container"></div>
