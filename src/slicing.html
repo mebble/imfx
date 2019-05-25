@@ -1,0 +1,46 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ImFx</title>
+    <link rel="stylesheet" href="./reset.css">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./layout.css">
+</head>
+
+<body>
+    <div id="content">
+        <div class="row">
+            <h1 id="title">ImFx</h1>
+        </div>
+        <div class="row">
+            <p>
+                Bit plane slicing!!!
+            </p>
+        </div>
+        <div id="sketch-in" class="canvas-container"></div>
+        <div id="sketch-out" class="canvas-container"></div>
+        <div class="row">
+            <select id="image-select">
+                <option value="street-skeletons">Street Skeletons</option>
+                <option value="cat-hat">Cat In A Hat</option>
+                <option value="lenna">Lenna</option>
+                <option value="painting">Renaissance Painting</option>
+                <option value="tower">Concrete Tower</option>
+                <option value="zebra">Zebra</option>
+            </select>
+        </div>
+        <div class="row" style="flex-direction: column">
+            <input id="bit-input" type="range" min="0" max="7" />
+            <span id="bit-input-disp"></span>
+        </div>
+        <div class="row">
+            <button id="apply-slicing-btn" type="button">Apply slicing</button>
+        </div>
+    </div>
+    <script src="./slicing.js"></script>
+</body>
+
+</html>

@@ -1,11 +1,33 @@
 import _ from 'lodash';
-import { posToIndex } from './utils';
+import { posToIndex, bitSlicePixel } from './utils';
 
 self.addEventListener('message', (event) => {
     if (event.data.op === 'spatial-filter') {
         const { kernel, image, xOff, yOff } = event.data;
         const newImage = filterImage(kernel, image);
         self.postMessage({ newImage, xOff, yOff });
+        return;
+    }
+
+    if (event.data.op === 'bit-plane-slicing') {
+        const { bitIndex, image } = event.data;
+        const toIndex = posToIndex(image.width);
+        const slicePixel = bitSlicePixel(bitIndex);
+        // for bit-plane-slicing, we can mutate the image in-place
+        for (let y = 0; y < image.height; y++) {
+            for (let x = 0; x < image.width; x++) {
+                const i = toIndex(x, y);
+                const r = slicePixel(image.pixels[i + 0]);
+                const g = slicePixel(image.pixels[i + 1]);
+                const b = slicePixel(image.pixels[i + 2]);
+                const a = slicePixel(image.pixels[i + 3]);
+                image.pixels[i + 0] = r;
+                image.pixels[i + 1] = g;
+                image.pixels[i + 2] = b;
+                image.pixels[i + 3] = a;
+            }
+        }
+        self.postMessage({ newImage: image });
         return;
     }
 });
