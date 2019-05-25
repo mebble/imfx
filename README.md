@@ -1,5 +1,7 @@
 # ImFx
-Apply a filter to an image through kernel convolution.
+Perform client-side image processing algorithms like:
+- Spatial domain filtering
+- Bit-plane slicing
 
 Check out [the demo](https://mebble.github.io/imfx/).
 
