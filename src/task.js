@@ -1,21 +1,98 @@
 import _ from 'lodash';
-import { posToIndex, bitSlicePixel } from './utils';
+import { posToIndex, bitSlicePixel, firstNonZero } from './utils';
 
 self.addEventListener('message', (event) => {
-    if (event.data.op === 'spatial-filter') {
+    const { op } = event.data;
+
+    if (op === 'spatial-filter') {
         const { kernel, image, xOff, yOff } = event.data;
         const newImage = filterImage(kernel, image);
         self.postMessage({ newImage, xOff, yOff });
         return;
     }
 
-    if (event.data.op === 'bit-plane-slicing') {
+    if (op === 'bit-plane-slicing') {
         const { image, bitIndex } = event.data;
         bitPlaneSlicing(image, bitIndex);
         self.postMessage({ newImage: image });
         return;
     }
+
+    if (op === 'hist-equal') {
+        const { image } = event.data;
+        histEqualisation(image);
+        self.postMessage({ newImage: image });
+        return;
+    }
 });
+
+function histEqualisation(image) {
+    const toIndex = posToIndex(image.width);
+
+    // don't equalise the alpha channel, or else output might be transparent
+    const histR = new Array(256).fill(0);
+    const histG = new Array(256).fill(0);
+    const histB = new Array(256).fill(0);
+
+    // build the histograms of all channels
+    for (let y = 0; y < image.height; y++) {
+        for (let x = 0; x < image.width; x++) {
+            const i = toIndex(x, y);
+            const r = image.pixels[i + 0];
+            const g = image.pixels[i + 1];
+            const b = image.pixels[i + 2];
+            histR[r]++;
+            histG[g]++;
+            histB[b]++;
+        }
+    }
+
+    // build the CDFs
+    const cdfR = getCDF(histR);
+    const cdfG = getCDF(histG);
+    const cdfB = getCDF(histB);
+
+    // Get the cdfMin (CDF firstNonZero)
+    // Note: the CDF's firstNonZero is equal to histogram's firstNonZero
+    const minR = firstNonZero(cdfR);
+    const minG = firstNonZero(cdfG);
+    const minB = firstNonZero(cdfB);
+
+    // build the equalisation functions
+    const numPixels = image.width * image.height;
+    const equalR = useEqual(cdfR, minR, numPixels);
+    const equalG = useEqual(cdfG, minG, numPixels);
+    const equalB = useEqual(cdfB, minB, numPixels);
+
+    // perform equalisation by mutating the image in-place
+    for (let y = 0; y < image.height; y++) {
+        for (let x = 0; x < image.width; x++) {
+            const i = toIndex(x, y);
+            const r = equalR(image.pixels[i + 0]);
+            const g = equalG(image.pixels[i + 1]);
+            const b = equalB(image.pixels[i + 2]);
+            image.pixels[i + 0] = r;
+            image.pixels[i + 1] = g;
+            image.pixels[i + 2] = b;
+        }
+    }
+}
+
+function useEqual(cdf, cdfMin, numPixels) {
+    const part = 255 / (numPixels - cdfMin);
+    return (level) => {
+        return Math.round((cdf[level] - cdfMin) * part);
+    };
+}
+
+function getCDF(histogram) {
+    let acc = 0;
+    const cdf = histogram.map((count, i) => {
+        acc += count;
+        return acc;
+    });
+    return cdf;
+}
 
 function bitPlaneSlicing(image, bitIndex) {
     const toIndex = posToIndex(image.width);

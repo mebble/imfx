@@ -21,13 +21,6 @@ imageSelect.addEventListener('change', (event) => {
     newImageSketch(imageSelect.value, false);
 });
 
-const bitInput = document.getElementById('bit-input');
-const bitInputDisp = document.getElementById('bit-input-disp');
-bitInputDisp.textContent = bitInput.value;
-bitInput.addEventListener('change', (event) => {
-    bitInputDisp.textContent = bitInput.value;
-});
-
 function newImageSketch(imageName, firstImage) {
     sketchIn = new p5(sIn => {
         sIn.preload = () => {
@@ -55,22 +48,16 @@ function newImageSketch(imageName, firstImage) {
 
                         // end cycle: loadPixels -> post image -> get new image -> updatePixels
                         imgOut.updatePixels();
-                        console.timeEnd('Slicing time');
+                        console.timeEnd('Equalisation time');
                         applyBtn.disabled = false;
                     });
 
                     applyBtn.addEventListener('click', (event) => {
                         applyBtn.disabled = true;
-                        const bitIndex = parseInt(bitInput.value);
-                        if (isNaN(bitIndex)) {
-                            applyBtn.disabled = false;
-                            return;
-                        }
 
                         imgIn.loadPixels();
                         worker.postMessage({
-                            op: 'bit-plane-slicing',
-                            bitIndex,
+                            op: 'hist-equal',
                             image: {
                                 width: imgIn.width,
                                 height: imgIn.height,
@@ -81,7 +68,7 @@ function newImageSketch(imageName, firstImage) {
 
                         // begin cycle: loadPixels -> post image -> get new image -> updatePixels
                         imgOut.loadPixels();
-                        console.time('Slicing time');
+                        console.time('Equalisation time');
                     });
                 };
                 sOut.draw = function () {

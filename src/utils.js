@@ -11,3 +11,11 @@ export const bitSlicePixel = bitIndex => num => {
     const res = bits[bitIndex] * 255;
     return res;
 };
+
+export const firstNonZero = nums => {
+    for (const x of nums) {
+        if (x !== 0) {
+            return x;
+        }
+    }
+}
