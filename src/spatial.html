@@ -14,15 +14,26 @@
             <h1 id="title">Spatial-domain Image Filtering</h1>
         </div>
         <div class="row">
-            <p>This demonstrates spatial-domain image filtering on an input image using a kernel (<a href="https://en.wikipedia.org/wiki/Kernel_(image_processing)">wikipedia</a>). The first canvas holds the input image.
-                The kernel shown below will be used for the filtering. The output image will appear on the second canvas. You can edit the kernel all you want, or select one of
-                the given kernels. You can also select from a list of sample input images. The "apply" button will be disabled while the image is being processed and will be re-enabled when it's done.
-                You'll need to be patient if your device is slow, because it'll take a few seconds. That's why I recommend you use a desktop/laptop, but most phones would still be capable of handling the load.
-                Choose an image you like, a kernel you think sounds cool, and go to town (you must at least try edge detection on the skeletons and sharpening the renaissance painting). Inspired by <a href="http://setosa.io/ev/image-kernels/">this blog post</a>.
+            <p>This demonstrates spatial-domain image filtering on an input image using a kernel (<a
+                    href="https://en.wikipedia.org/wiki/Kernel_(image_processing)">wikipedia</a>). The first canvas holds
+                the input image.
+                The kernel shown below will be used for the filtering. The output image will appear on the second canvas.
+                You can edit the kernel all you want, or select one of
+                the given kernels. You can also select from a list of sample input images. The "apply" button will be
+                disabled while the image is being processed and will be re-enabled when it's done.
+                You'll need to be patient if your device is slow, because it'll take a few seconds. That's why I recommend
+                you use a desktop/laptop, but most phones would still be capable of handling the load.
+                Choose an image you like, a kernel you think sounds cool, and go to town (you must at least try edge
+                detection on the skeletons and sharpening the renaissance painting). Inspired by <a
+                    href="http://setosa.io/ev/image-kernels/">this blog post</a>.
             </p>
         </div>
-        <div id="sketch-in" class="canvas-container"></div>
-        <div id="sketch-out" class="canvas-container"></div>
+        <div id="sketch-in" class="canvas-container">
+            <canvas id="img-in"></canvas>
+        </div>
+        <div id="sketch-out" class="canvas-container">
+            <canvas id="img-out"></canvas>
+        </div>
         <div class="row">
             <select id="image-select">
                 <option value="street-skeletons">Street Skeletons</option>
