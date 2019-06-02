@@ -31,6 +31,7 @@ applyBtn.disabled = false;
 // globals
 const ctxIn = canvasIn.getContext('2d');
 const ctxOut = canvasOut.getContext('2d');
+let imgOutData;
 const imgIn = new Image();
 
 // event listeners
@@ -43,27 +44,10 @@ imgIn.addEventListener('load', function () {
     canvasOut.height = imgIn.height;
     imgSelect.disabled = false;
 
-    const imgOutData = ctxOut.createImageData(imgIn.width, imgIn.height);
-    const toIndex = posToIndex(imgIn.width);
+    imgOutData = ctxOut.createImageData(imgIn.width, imgIn.height);
 
     if (!firstLoad) return;
 
-    const handleResponse = event => {
-        const { newImage, xOff, yOff } = event.data;
-        for (const [x, y, channels] of newImage) {
-            const i = toIndex(xOff + x, yOff + y);
-            imgOutData.data[i + 0] = channels[0];
-            imgOutData.data[i + 1] = channels[1];
-            imgOutData.data[i + 2] = channels[2];
-            imgOutData.data[i + 3] = channels[3];
-        }
-        numRunning -= 1;
-        if (numRunning === 0) {
-            ctxOut.putImageData(imgOutData, 0, 0);
-            console.timeEnd('Filter time');
-            applyBtn.disabled = false;
-        }
-    };
     for (const worker of workers) {
         worker.addEventListener('message', handleResponse);
     }
@@ -113,3 +97,21 @@ kernelTable.addEventListener('input', (event) => {
 // start program
 imgIn.src = images[imgSelect.value];
 updateKernel(kernelSelect.value);
+
+function handleResponse(event) {
+    const toIndex = posToIndex(imgIn.width);
+    const { newImage, xOff, yOff } = event.data;
+    for (const [x, y, channels] of newImage) {
+        const i = toIndex(xOff + x, yOff + y);
+        imgOutData.data[i + 0] = channels[0];
+        imgOutData.data[i + 1] = channels[1];
+        imgOutData.data[i + 2] = channels[2];
+        imgOutData.data[i + 3] = channels[3];
+    }
+    numRunning -= 1;
+    if (numRunning === 0) {
+        ctxOut.putImageData(imgOutData, 0, 0);
+        console.timeEnd('Filter time');
+        applyBtn.disabled = false;
+    }
+};
