@@ -1,7 +1,7 @@
 {
   "name": "ImFx",
-  "version": "1.0.0",
-  "description": "Apply a filter to an image through kernel convolution",
+  "version": "4.0.0",
+  "description": "A series of client-side image processing experiments",
   "scripts": {
     "cleanup": "rm -rf .cache dist",
     "dev": "npm run cleanup && parcel src/index.html",
@@ -15,8 +15,7 @@
   "author": "Neil Syiemlieh",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.11",
-    "p5": "^0.7.3"
+    "lodash": "^4.17.11"
   },
   "devDependencies": {
     "cssnano": "^4.1.10",
