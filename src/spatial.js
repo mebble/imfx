@@ -23,7 +23,6 @@ const kernelTable = document.getElementById('kernel-table');
 const applyBtn = document.getElementById('apply-kernel-btn');
 
 // init global state
-let firstLoad = true;
 let numRunning = 0;
 imgSelect.disabled = true;
 applyBtn.disabled = false;
@@ -35,7 +34,7 @@ let imgOutData;
 const imgIn = new Image();
 
 // event listeners
-imgIn.addEventListener('load', function () {
+imgIn.addEventListener('load', function() {
     ctxOut.clearRect(0, 0, canvasOut.width, canvasOut.height);
     canvasIn.width = imgIn.width;
     canvasIn.height = imgIn.height;
@@ -43,11 +42,10 @@ imgIn.addEventListener('load', function () {
     canvasOut.width = imgIn.width;
     canvasOut.height = imgIn.height;
     imgSelect.disabled = false;
-
     imgOutData = ctxOut.createImageData(imgIn.width, imgIn.height);
+});
 
-    if (!firstLoad) return;
-
+imgIn.addEventListener('load', function() {
     for (const worker of workers) {
         worker.addEventListener('message', handleResponse);
     }
@@ -77,11 +75,10 @@ imgIn.addEventListener('load', function () {
         }
         console.time('Filter time');
     });
-});
+}, { once: true });
 
 imgSelect.addEventListener('change', (event) => {
     imgIn.src = images[imgSelect.value];
-    firstLoad = false;
     imgSelect.disabled = true;
 });
 
