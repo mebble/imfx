@@ -7,13 +7,6 @@ if (!window.Worker) {
     console.log("You don't have workers, sorry!");
 }
 
-const workers = [
-    new Worker('task.js'),
-    new Worker('task.js'),
-    new Worker('task.js'),
-    new Worker('task.js'),
-];
-
 // DOM references
 const canvasIn = document.getElementById('img-in');
 const canvasOut = document.getElementById('img-out');
@@ -70,6 +63,14 @@ kernelTable.addEventListener('input', (event) => {
 imgIn.src = images[imgSelect.value];
 updateKernel(kernelSelect.value);
 
+const workers = [
+    new Worker('task.js'),
+    new Worker('task.js'),
+    new Worker('task.js'),
+    new Worker('task.js'),
+];
+
+// handlers
 function handleResponse(event) {
     const toIndex = posToIndex(imgIn.width);
     const { newImage, xOff, yOff } = event.data;
