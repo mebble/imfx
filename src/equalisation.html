@@ -23,8 +23,12 @@
                 colour balance can be avoided by first transforming the image to a more appropriate colour space and equalising that instead.
             </p>
         </div>
-        <div id="sketch-in" class="canvas-container"></div>
-        <div id="sketch-out" class="canvas-container"></div>
+        <div id="sketch-in" class="canvas-container">
+            <canvas id="img-in"></canvas>
+        </div>
+        <div id="sketch-out" class="canvas-container">
+            <canvas id="img-out"></canvas>
+        </div>
         <div class="row">
             <select id="image-select">
                 <option value="street-skeletons">Street Skeletons</option>
@@ -37,7 +41,7 @@
         </div>
         <div class="row"></div>  <!-- HACK - must exist to follow layout.css grid rules-->
         <div class="row">
-            <button id="apply-slicing-btn" type="button">Equalise</button>
+            <button id="apply-equal-btn" type="button">Equalise</button>
         </div>
     </div>
     <script src="./equalisation.js"></script>
