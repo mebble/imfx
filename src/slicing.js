@@ -1,109 +1,85 @@
-import p5 from 'p5';
-
 import images from './../assets/images/*.jpeg';
 
 if (!window.Worker) {
     console.log("You don't have workers, sorry!");
 }
 
-const applyBtn = document.getElementById('apply-slicing-btn');
-const worker = new Worker('task.js');
-
-let imgIn;
-let imgOut;
-let sketchIn;
-let sketchOut;
-
-const imageSelect = document.getElementById('image-select');
-newImageSketch(imageSelect.value, true);
-imageSelect.addEventListener('change', (event) => {
-    cleanCanvases();
-    newImageSketch(imageSelect.value, false);
-});
-
+// DOM references
+const canvasIn = document.getElementById('img-in');
+const canvasOut = document.getElementById('img-out');
+const imgSelect = document.getElementById('image-select');
 const bitInput = document.getElementById('bit-input');
 const bitInputDisp = document.getElementById('bit-input-disp');
-bitInputDisp.textContent = bitInput.value;
+const applyBtn = document.getElementById('apply-slicing-btn');
+
+// init global state
+imgSelect.disabled = true;
+applyBtn.disabled = false;
+let imgOutData;
+
+// globals
+const ctxIn = canvasIn.getContext('2d');
+const ctxOut = canvasOut.getContext('2d');
+const imgIn = new Image();
+
+// event listeners
+imgIn.addEventListener('load', function () {
+    ctxOut.clearRect(0, 0, canvasOut.width, canvasOut.height);
+    canvasIn.width = imgIn.width;
+    canvasIn.height = imgIn.height;
+    ctxIn.drawImage(imgIn, 0, 0);
+    canvasOut.width = imgIn.width;
+    canvasOut.height = imgIn.height;
+    imgSelect.disabled = false;
+    imgOutData = ctxOut.createImageData(imgIn.width, imgIn.height);
+});
+
+imgIn.addEventListener('load', function () {
+    worker.addEventListener('message', handleResponse);
+    applyBtn.addEventListener('click', sendRequest);
+}, { once: true });
+
+imgSelect.addEventListener('change', (event) => {
+    imgIn.src = images[imgSelect.value];
+    imgSelect.disabled = true;
+});
+
 bitInput.addEventListener('change', (event) => {
     bitInputDisp.textContent = bitInput.value;
 });
 
-function newImageSketch(imageName, firstImage) {
-    sketchIn = new p5(sIn => {
-        sIn.preload = () => {
-            imgIn = sIn.loadImage(images[imageName]);
-        };
-        sIn.setup = () => {
-            sIn.createCanvas(imgIn.width, imgIn.height);
-            sketchOut = new p5(sOut => {
-                sOut.setup = () => {
-                    sOut.createCanvas(imgIn.width, imgIn.height);
-                    imgOut = sOut.createImage(imgIn.width, imgIn.height);
+// start program
+imgIn.src = images[imgSelect.value];
+bitInputDisp.textContent = bitInput.value;
+const worker = new Worker('task.js');
 
-                    /**
-                     * init listeneres only when:
-                     * - imgIn and imgOut have been defined
-                     * - this is just the first image that's loaded
-                     */
-                    if (!firstImage) return;
-
-                    worker.addEventListener('message', event => {
-                        const { newImage } = event.data;
-                        for (let i = 0; i < newImage.pixels.length; i++) {
-                            imgOut.pixels[i] = newImage.pixels[i];
-                        }
-
-                        // end cycle: loadPixels -> post image -> get new image -> updatePixels
-                        imgOut.updatePixels();
-                        console.timeEnd('Slicing time');
-                        applyBtn.disabled = false;
-                    });
-
-                    applyBtn.addEventListener('click', (event) => {
-                        applyBtn.disabled = true;
-                        const bitIndex = parseInt(bitInput.value);
-                        if (isNaN(bitIndex)) {
-                            applyBtn.disabled = false;
-                            return;
-                        }
-
-                        imgIn.loadPixels();
-                        worker.postMessage({
-                            op: 'bit-plane-slicing',
-                            bitIndex,
-                            image: {
-                                width: imgIn.width,
-                                height: imgIn.height,
-                                pixels: imgIn.pixels,
-                            }
-                        });
-                        imgIn.updatePixels();
-
-                        // begin cycle: loadPixels -> post image -> get new image -> updatePixels
-                        imgOut.loadPixels();
-                        console.time('Slicing time');
-                    });
-                };
-                sOut.draw = function () {
-                    sOut.background(0);
-                    sOut.image(imgOut, 0, 0);
-                };
-            }, 'sketch-out');
-        };
-        sIn.draw = function () {
-            sIn.background(0);
-            sIn.image(imgIn, 0, 0);
-        };
-    }, 'sketch-in');
-};
-
-function cleanCanvases() {
-    const sketchInDiv = document.getElementById('sketch-in');
-    const sketchOutDiv = document.getElementById('sketch-out');
-    while (sketchInDiv.firstChild) {
-        sketchInDiv.removeChild(sketchInDiv.firstChild);
+// handlers
+function handleResponse(event) {
+    const { newImage } = event.data;
+    for (let i = 0; i < newImage.pixels.length; i++) {
+        imgOutData.data[i] = newImage.pixels[i];
     }
-    while (sketchOutDiv.firstChild) {
-        sketchOutDiv.removeChild(sketchOutDiv.firstChild);
+    ctxOut.putImageData(imgOutData, 0, 0);
+    console.timeEnd('Slicing time');
+    applyBtn.disabled = false;
+}
+
+function sendRequest() {
+    applyBtn.disabled = true;
+    const bitIndex = parseInt(bitInput.value);
+    if (isNaN(bitIndex)) {
+        applyBtn.disabled = false;
+        return;
     }
+    const imgInData = ctxIn.getImageData(0, 0, canvasIn.width, canvasIn.height);
+    worker.postMessage({
+        op: 'bit-plane-slicing',
+        bitIndex,
+        image: {
+            width: imgInData.width,
+            height: imgInData.height,
+            pixels: imgInData.data,
+        }
+    });
+    console.time('Slicing time');
 }

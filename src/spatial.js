@@ -17,13 +17,13 @@ const applyBtn = document.getElementById('apply-kernel-btn');
 
 // init global state
 let numRunning = 0;
+let imgOutData;
 imgSelect.disabled = true;
 applyBtn.disabled = false;
 
 // globals
 const ctxIn = canvasIn.getContext('2d');
 const ctxOut = canvasOut.getContext('2d');
-let imgOutData;
 const imgIn = new Image();
 
 // event listeners
