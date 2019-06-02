@@ -49,32 +49,7 @@ imgIn.addEventListener('load', function() {
     for (const worker of workers) {
         worker.addEventListener('message', handleResponse);
     }
-
-    applyBtn.addEventListener('click', (event) => {
-        applyBtn.disabled = true;
-        const partitions = getPartitions(imgIn);
-        const kernel = parseKernel();
-
-        for (let i = 0; i < workers.length; i++) {
-            const [xOff, yOff, w, h] = partitions[i];
-            const worker = workers[i];
-
-            const subImgData = ctxIn.getImageData(xOff, yOff, w, h);
-            worker.postMessage({
-                op: 'spatial-filter',
-                kernel,
-                xOff,
-                yOff,
-                image: {
-                    width: subImgData.width,
-                    height: subImgData.height,
-                    pixels: subImgData.data,
-                }
-            });
-            numRunning += 1;
-        }
-        console.time('Filter time');
-    });
+    applyBtn.addEventListener('click', sendRequest);
 }, { once: true });
 
 imgSelect.addEventListener('change', (event) => {
@@ -112,3 +87,29 @@ function handleResponse(event) {
         applyBtn.disabled = false;
     }
 };
+
+function sendRequest() {
+    applyBtn.disabled = true;
+    const partitions = getPartitions(imgIn);
+    const kernel = parseKernel();
+
+    for (let i = 0; i < workers.length; i++) {
+        const [xOff, yOff, w, h] = partitions[i];
+        const worker = workers[i];
+
+        const subImgData = ctxIn.getImageData(xOff, yOff, w, h);
+        worker.postMessage({
+            op: 'spatial-filter',
+            kernel,
+            xOff,
+            yOff,
+            image: {
+                width: subImgData.width,
+                height: subImgData.height,
+                pixels: subImgData.data,
+            }
+        });
+        numRunning += 1;
+    }
+    console.time('Filter time');
+}
