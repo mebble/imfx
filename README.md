@@ -41,3 +41,6 @@ Check out [the demo](https://mebble.github.io/imfx/).
 - [ ] Download output to device
 - [ ] Allow use of 5x5 kernels
 - [ ] Use native canvas api instead of p5
+- [ ] populate the pixels of the result image as they return from the web worker
+- [ ] use rxjs
+- [ ] floyd-steinberg dithering and other codingtrain challenges
