@@ -1,6 +1,6 @@
 {
   "name": "ImFx",
-  "version": "4.0.0",
+  "version": "0.5.0",
   "description": "A series of client-side image processing experiments",
   "scripts": {
     "cleanup": "rm -rf .cache dist",

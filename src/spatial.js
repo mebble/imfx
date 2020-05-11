@@ -81,9 +81,9 @@ function handleResponse(event) {
         imgOutData.data[i + 2] = channels[2];
         imgOutData.data[i + 3] = channels[3];
     }
+    ctxOut.putImageData(imgOutData, 0, 0);
     numRunning -= 1;
     if (numRunning === 0) {
-        ctxOut.putImageData(imgOutData, 0, 0);
         console.timeEnd('Filter time');
         applyBtn.disabled = false;
     }
